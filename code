@@ -1,0 +1,81 @@
+import cv2
+import numpy as np
+
+# Load cascade
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+# Load your hat image with transparency
+hat_img_path = r"C:\Users\acer\glass.jpg.jpg"  # Use your actual image path here
+hat_img = cv2.imread(hat_img_path, cv2.IMREAD_UNCHANGED)
+if hat_img is None:
+    print("Error: Could not load hat image!")
+    exit()
+
+def overlay_image_alpha(img, img_overlay, x, y, alpha_mask):
+    h, w = img_overlay.shape[0], img_overlay.shape[1]
+    y1, y2 = max(0, y), min(img.shape[0], y + h)
+    x1, x2 = max(0, x), min(img.shape[1], x + w)
+
+    y1o, y2o = max(0, -y), h - max(0, y + h - img.shape[0])
+    x1o, x2o = max(0, -x), w - max(0, x + w - img.shape[1])
+
+    if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
+        return
+
+    roi = img[y1:y2, x1:x2]
+    overlay = img_overlay[y1o:y2o, x1o:x2o]
+    alpha = alpha_mask[y1o:y2o, x1o:x2o, None] / 255.0
+
+    img[y1:y2, x1:x2] = (1. - alpha) * roi + alpha * overlay
+
+cap = cv2.VideoCapture(0)
+camera_on = True
+
+while True:
+    if camera_on:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.1, 5)
+
+        for (x, y, w, h) in faces:
+            # Hat size wider than face width
+            hat_width = int(1.5 * w)
+            hat_height = int(hat_width * hat_img.shape[0] / hat_img.shape[1])
+
+            # Center hat horizontally over face
+            x1 = x - int((hat_width - w) / 2)
+
+            # Position hat above face rectangle with some padding
+            y1 = max(0, y - hat_height - 10)
+
+            # Resize hat
+            resized_hat = cv2.resize(hat_img, (hat_width, hat_height), interpolation=cv2.INTER_AREA)
+
+            hat_color = resized_hat[:, :, :3]
+            if resized_hat.shape[2] == 4:
+                hat_alpha = resized_hat[:, :, 3]
+            else:
+                hat_alpha = np.ones(hat_color.shape[:2], dtype=hat_color.dtype) * 255
+
+            overlay_image_alpha(frame, hat_color, x1, y1, hat_alpha)
+
+        cv2.imshow('Fun Filters (Press c to toggle camera, ESC to quit)', frame)
+
+    else:
+        black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        cv2.putText(black_frame, "Camera OFF - Press 'c' to turn ON", (50, 240),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        cv2.imshow('Fun Filters (Press c to toggle camera, ESC to quit)', black_frame)
+
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:  # ESC
+        break
+    elif key == ord('c'):
+        camera_on = not camera_on
+
+if cap.isOpened():
+    cap.release()
+cv2.destroyAllWindows()
