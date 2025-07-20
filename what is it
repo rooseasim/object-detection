@@ -1,0 +1,15 @@
+Real-Time Fun Face Filter with OpenCV 
+A playful webcam app that detects faces in real-time using OpenCV and overlays fun filters—like hats or glasses—right on top of your head! Features include:
+
+Live face detection with Haar cascades
+
+Transparent PNG filter overlays positioned dynamically above detected faces
+
+Toggle camera ON/OFF with a keyboard shortcut (c)
+
+Clean exit with ESC key
+
+Easily customizable to add your own filters or effects
+
+Perfect for learning OpenCV basics while adding a touch of augmented reality fun!
+
