@@ -1,4 +1,4 @@
-This project implements a real-time face detection and augmentation system utilizing OpenCV's Haar cascade classifiers. The application captures live video input from a webcam, detects human faces within the frames, and overlays graphical filters—such as hats—precisely positioned relative to detected facial regions.
+This project implements a real-time face detection and augmentation system utilizing OpenCV's  classifiers. The application captures live video input from a webcam, detects human faces within the frames, and overlays graphical filters—such as hats—precisely positioned relative to detected facial regions.it is lso secial instead of closing the whole tab their is a button ou can just control the cam to shut on or off..
 
 Key features include:
 
@@ -13,6 +13,7 @@ Extensibility: Modular design enabling easy addition or modification of graphica
 
 
 Benefits:
+
 Hands-on Learning,
 Augmented Reality Foundation( Demonstrates fundamental AR concepts by augmenting live video ),
 User Engagement,
